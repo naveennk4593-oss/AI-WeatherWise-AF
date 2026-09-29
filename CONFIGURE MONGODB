@@ -1,0 +1,186 @@
+## Configure MongoDB
+
+### Overview
+
+MongoDB is a NoSQL database used to store application data in flexible, document-based collections. MongoDB can be configured locally or on a server and connected to the application using a MongoDB connection string.
+
+### MongoDB Configuration Responsibilities
+
+* Install MongoDB on the server.
+* Start and enable the MongoDB service.
+* Create the required database and collections.
+* Configure database users and authentication.
+* Configure the MongoDB connection string.
+* Connect MongoDB with the application.
+* Secure the database and restrict unauthorized access.
+* Monitor database services and perform backups.
+
+### Install MongoDB on Ubuntu
+
+```bash
+# Update packages
+sudo apt update
+
+# Install MongoDB
+sudo apt install mongodb -y
+
+# Start MongoDB
+sudo systemctl start mongodb
+
+# Enable MongoDB at startup
+sudo systemctl enable mongodb
+
+# Check MongoDB status
+sudo systemctl status mongodb
+```
+
+### Check MongoDB Connection
+
+```bash
+mongosh
+```
+
+Inside the MongoDB shell:
+
+```javascript
+show dbs
+
+use myApplicationDB
+
+db.users.insertOne({
+    name: "John",
+    email: "john@example.com",
+    role: "user"
+})
+
+db.users.find()
+```
+
+### Node.js MongoDB Connection
+
+Install the MongoDB driver:
+
+```bash
+npm install mongodb
+```
+
+Create a connection:
+
+```javascript
+const { MongoClient } = require("mongodb");
+
+const uri = "mongodb://localhost:27017";
+const client = new MongoClient(uri);
+
+async function connectDatabase() {
+    try {
+        await client.connect();
+
+        const database = client.db("myApplicationDB");
+
+        console.log("MongoDB connected successfully");
+
+        return database;
+    } catch (error) {
+        console.error("MongoDB connection failed:", error);
+    }
+}
+
+connectDatabase();
+```
+
+### Using Mongoose
+
+Install Mongoose:
+
+```bash
+npm install mongoose
+```
+
+Connection code:
+
+```javascript
+const mongoose = require("mongoose");
+
+mongoose.connect("mongodb://localhost:27017/myApplicationDB")
+    .then(() => {
+        console.log("MongoDB connected successfully");
+    })
+    .catch((error) => {
+        console.error("MongoDB connection error:", error);
+    });
+```
+
+### Create a User Model
+
+```javascript
+const mongoose = require("mongoose");
+
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    role: {
+        type: String,
+        default: "user"
+    }
+});
+
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;
+```
+
+### Insert Data
+
+```javascript
+const User = require("./models/User");
+
+const user = new User({
+    name: "John",
+    email: "john@example.com",
+    role: "user"
+});
+
+user.save()
+    .then(() => {
+        console.log("User saved successfully");
+    })
+    .catch((error) => {
+        console.error(error);
+    });
+```
+
+### Environment Configuration
+
+For production, keep the database connection string in an environment variable rather than directly in the source code.
+
+```env
+MONGODB_URI=mongodb://localhost:27017/myApplicationDB
+```
+
+Then use it in Node.js:
+
+```javascript
+require("dotenv").config();
+const mongoose = require("mongoose");
+
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log("MongoDB connected"))
+    .catch(error => console.error("Database error:", error));
+```
+
+### Verification
+
+```bash
+sudo systemctl status mongodb
+mongosh
+```
+
+The MongoDB configuration is complete when the database service is running, the application can establish a connection, and data can be successfully inserted and retrieved.
