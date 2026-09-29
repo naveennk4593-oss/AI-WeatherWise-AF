@@ -1,0 +1,108 @@
+## Server Setup
+
+### Overview
+
+Server setup is the process of preparing a server environment to host and run an application. It includes installing the required operating system packages, configuring the web server, setting up the application, connecting the database, and applying basic security settings.
+
+### Server Setup Responsibilities
+
+* Install and configure the server operating system.
+* Install required software and dependencies.
+* Configure the web server such as Apache or Nginx.
+* Deploy the application files to the server.
+* Configure the database connection.
+* Set environment variables and application settings.
+* Configure firewall and required network ports.
+* Enable SSL/HTTPS for secure communication.
+* Start and monitor application services.
+* Create backups and maintain server logs.
+
+### Example: Ubuntu Server Setup
+
+```bash
+# Update the server
+sudo apt update
+sudo apt upgrade -y
+
+# Install required packages
+sudo apt install nginx git curl -y
+
+# Check Nginx status
+sudo systemctl status nginx
+
+# Enable Nginx at system startup
+sudo systemctl enable nginx
+
+# Start Nginx
+sudo systemctl start nginx
+
+# Clone the application
+cd /var/www/
+sudo git clone https://github.com/example/my-application.git
+
+# Set application permissions
+sudo chown -R www-data:www-data /var/www/my-application
+sudo chmod -R 755 /var/www/my-application
+```
+
+### Nginx Configuration
+
+```nginx
+server {
+    listen 80;
+    server_name example.com;
+
+    root /var/www/my-application;
+    index index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+After creating the configuration:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+### Firewall Configuration
+
+```bash
+sudo ufw allow OpenSSH
+sudo ufw allow 'Nginx Full'
+sudo ufw enable
+sudo ufw status
+```
+
+### Application Deployment
+
+```bash
+cd /var/www/my-application
+
+# Install dependencies
+npm install
+
+# Build the application
+npm run build
+
+# Start the application
+npm start
+```
+
+### Verification
+
+```bash
+# Check web server
+sudo systemctl status nginx
+
+# Check open ports
+sudo ss -tulpn
+
+# Test the application
+curl http://localhost
+```
+
+The server is considered ready when the application is accessible, required services are running, the database connection is working, and the necessary security configurations are enabled.
